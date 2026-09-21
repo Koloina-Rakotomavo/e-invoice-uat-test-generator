@@ -1,135 +1,21 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>G√©n√©rateur UBL France - Factures & Tests</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="wrap">
-  <div class="top">
-    <h1>G√©n√©rateur de factures UBL France & cas de tests</h1>
-    <div class="small">
-      Facture v√©hicule : ABZ (immatriculation) et AKG (VIN/ch√¢ssis) sont g√©n√©r√©s simultan√©ment, avec paiement, livraison optionnelle et lignes d√©taill√©es.
-      Tu choisis d‚Äôabord un cas de test : le formulaire est alors pr√©rempli avec un num√©ro de facture, des r√©f√©rences et des montants diff√©rents. Pour T000, tu peux aussi produire autant de variantes conformes al√©atoires que n√©cessaire. Les champs marqu√©s ‚òÖ doivent √™tre remplac√©s par tes donn√©es UAT r√©elles avant g√©n√©ration.
-    </div>
-    <div id="status" class="status">Pr√™t.</div>
-  </div>
-
-  <div class="grid">
-    <section class="card full routing-box">
-      <h2>0. Donn√©es UAT √† renseigner AVANT de g√©n√©rer les tests</h2>
-      <div class="hint">
-        <span class="star">‚òÖ</span> Ces 4 valeurs servent de <b>base valide</b> √† tous les sc√©narios.
-        Le g√©n√©rateur les copie dans la facture, puis applique uniquement l‚Äôanomalie du cas choisi.
-        <b>Les adresses de routage sont volontairement tr√®s visibles.</b>
-      </div>
-      <div class="subgrid">
-        <div>
-          <label><span class="star">‚òÖ</span> SIREN vendeur UAT</label>
-          <input id="uatSupplierSiren" value="A_REMPLACER_SIREN_VENDEUR">
-        </div>
-        <div>
-          <label class="routing-label"><span class="star">‚òÖ</span> Adresse de routage vendeur <span class="routing-badge">ROUTAGE</span></label>
-          <input id="uatSupplierEndpoint" class="routing-field" value="A_REMPLACER_ROUTAGE_VENDEUR">
-        </div>
-        <div>
-          <label><span class="star">‚òÖ</span> SIREN acheteur UAT</label>
-          <input id="uatBuyerSiren" value="A_REMPLACER_SIREN_ACHETEUR">
-        </div>
-        <div>
-          <label class="routing-label"><span class="star">‚òÖ</span> Adresse de routage acheteur / BT-49 <span class="routing-badge">ROUTAGE</span></label>
-          <input id="uatBuyerEndpoint" class="routing-field" value="A_REMPLACER_ROUTAGE_ACHETEUR">
-        </div>
-      </div>
-      <div id="criticalCheck" class="critical-check"></div>
-      <div class="legend">
-        <span><span class="star">‚òÖ</span> = √† remplacer par une vraie donn√©e UAT</span>
-        <span><span class="routing-badge">ROUTAGE</span> = valeur de routage particuli√®rement critique</span>
-      </div>
-    </section>
-
-    <section class="card full scenario-box">
-      <h2>Choisis le cas de test</h2>
-      <div class="subgrid">
-        <div>
-          <label>Cas de test √† pr√©parer</label>
-          <select id="scenarioTop">
-            <option value="T000">T000 - Facture conforme</option>
-            <option value="T001">T001 - N¬∞ facture absent</option>
-            <option value="T002">T002 - SIREN acheteur absent</option>
-            <option value="T003">T003 - BT-49 absent</option>
-            <option value="T004">T004 - Receiver ‚â† BT-49</option>
-            <option value="T005">T005 - Montant ligne 1 incoh√©rent</option>
-            <option value="T006">T006 - Total TVA incoh√©rent</option>
-            <option value="T007">T007 - PMT absent</option>
-            <option value="T008">T008 - PMD absent</option>
-            <option value="T009">T009 - AAB absent</option>
-            <option value="T010">T010 - ID ligne 1 absent</option>
-            <option value="T011">T011 - Quantit√© ligne 1 absente</option>
-            <option value="T012">T012 - Prix ligne 1 absent</option>
-            <option value="T013">T013 - Cat√©gorie TVA ligne 1 absente</option>
-            <option value="T014">T014 - ABZ absent / AKG conserv√©</option>
-            <option value="T015">T015 - BT-18 qualifiant invalide</option>
-            <option value="T016">T016 - BT-18 pr√©sent mais valeur vide</option>
-            <option value="T017">T017 - AKG absent / ABZ conserv√©</option>
-            <option value="T018">T018 - Mauvais code VIN : AKZ au lieu de AKG</option>
-            <option value="T019">T019 - Bloc livraison supprim√© (optionnel)</option>
-          </select>
-        </div>
-        <div style="align-self:end">
-          <button class="primary" id="prefillBtn">Pr√©remplir ce cas</button>
-        </div>
-      </div>
-      <div id="prefillInfo" class="prefill-note">
-        Le cas T000 sera pr√©rempli √† l‚Äôouverture. Change le sc√©nario : num√©ro de facture, commande, r√©f√©rences, immatriculation, VIN et montants changeront automatiquement.
-      </div>
-
-      <hr>
-      <h3>Factures conformes al√©atoires</h3>
-      <div class="hint">
-        Ces boutons conservent tes <b>SIREN et adresses de routage UAT</b>, mais changent automatiquement
-        le num√©ro de facture, les r√©f√©rences, l‚Äôimmatriculation, le VIN, le nombre de lignes, les quantit√©s,
-        les prix, remises et montants. Les totaux sont recalcul√©s pour que la facture reste coh√©rente.
-      </div>
-      <div class="subgrid">
-        <div>
-          <label>Nombre d‚Äôexemples conformes</label>
-          <select id="conformCount">
-            <option value="1">1 facture</option>
-            <option value="3">3 factures</option>
-            <option value="5" selected>5 factures</option>
-            <option value="10">10 factures</option>
-            <option value="20">20 factures</option>
-          </select>
-        </div>
-        <div style="align-self:end">
-          <button class="secondary" id="randomConformBtn">Nouvel exemple conforme</button>
-          <button class="primary" id="batchConformBtn">Pr√©parer plusieurs conformes</button>
-        </div>
-      </div>
-    </section>
-    <section class="card">
-      <h2>1. En-t√™te de facture</h2>
-      <div class="subgrid">
-        <div><label>N¬∞ facture (BT-1)</label><input id="invoiceId" value="FAC-2026-00987"></div>
-        <div><label>Type facture</label><select id="invoiceType"><option value="380">380 - Facture</option></select></div>
-        <div><label>Date √©mission (BT-2)</label><input id="issueDate" type="date"></div>
-        <div><label>Date √©ch√©ance (BT-9)</label><input id="dueDate" type="date"></div>
-        <div><label>Devise (BT-5)</label><select id="currency"><option>EUR</option><option>USD</option><option>GBP</option></select></div>
-        <div><label>BT-23 / nature FR</label><select id="profileId"><option value="B1">B1 - Biens</option><option value="S1">S1 - Services</option><option value="M1">M1 - Mixte</option></select></div>
-        <div><label>R√©f√©rence acheteur (BT-10)</label><input id="buyerReference" value="SERVICE-FLOTTE"></div>
-        <div><label>Bon de commande (BT-13)</label><input id="orderReference" value="CMD-2026-45871"></div>
-        <div><label>R√©f√©rence contrat (BT-12)</label><input id="contractReference" value="CTR-2026-0042"></div>
-        <div><label>R√©f√©rence paiement</label><input id="paymentReference" value="FAC-2026-00987"></div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>2. Routage / SBDH</h2>
-      <div class="hint">
-        Pour l'UAT r√©el : renseigner les EndpointID r√©ellement utilis√©s. Le Receiver doit rester coh√©rent avec l'EndpointID acheteur.
-      </div>
-      <div class="subgrid">
-        <div><label class="routing-label"><span class="starrâÌz{mÆÈ‹j◊ù~ä€≠Î‚∑ †£«67&óB7&3“&6˜&R”Êß2#„¬˜67&óC‡£«67&óB7&3“&6˜&R”"Êß2#„¬˜67&óC‡£«67&óB7&3“&6˜&R”2Êß2#„¬˜67&óC‡£«67&óB7&3“&6˜&R”BÊß2#„¬˜67&óC‡£«67&óB7&3“'Ví”Êß2#„¬˜67&óC‡£«67&óB7&3“'Ví”"Êß2#„¬˜67&óC‡£¬ˆ&ˆGì‡£¬ˆáF÷√‡
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>G√©n√©rateur UBL France - UAT</title><link rel="stylesheet" href="style.css"></head><body>
+<div class="wrap"><div class="top"><h1>G√©n√©rateur de factures UBL France & cas de tests</h1><div class="small">ABZ = immatriculation, AKG = VIN/ch√¢ssis. Les champs ‚òÖ et ROUTAGE doivent √™tre remplac√©s avec les donn√©es UAT r√©elles.</div><div id="status" class="status">Pr√™t.</div></div>
+<div class="grid">
+<section class="card full routing-box"><h2>0. Base UAT obligatoire</h2><div class="subgrid"><div><label>‚òÖ SIREN vendeur UAT</label><input id="uatSupplierSiren" value="A_REMPLACER_SIREN_VENDEUR"></div><div><label class="routing-label">‚òÖ Routage vendeur <span class="routing-badge">ROUTAGE</span></label><input id="uatSupplierEndpoint" class="routing-field" value="A_REMPLACER_ROUTAGE_VENDEUR"></div><div><label>‚òÖ SIREN acheteur UAT</label><input id="uatBuyerSiren" value="A_REMPLACER_SIREN_ACHETEUR"></div><div><label class="routing-label">‚òÖ Routage acheteur / BT-49 <span class="routing-badge">ROUTAGE</span></label><input id="uatBuyerEndpoint" class="routing-field" value="A_REMPLACER_ROUTAGE_ACHETEUR"></div></div><div id="criticalCheck" class="critical-check"></div></section>
+<section class="card full scenario-box"><h2>Choisir un cas de test</h2><div class="subgrid"><div><label>Sc√©nario</label><select id="scenarioTop"><option value="T000">T000 - Facture conforme</option><option value="T001">T001 - N¬∞ facture absent</option><option value="T002">T002 - SIREN acheteur absent</option><option value="T003">T003 - BT-49 absent</option><option value="T004">T004 - Receiver ‚â† BT-49</option><option value="T005">T005 - Montant ligne incoh√©rent</option><option value="T006">T006 - TVA incoh√©rente</option><option value="T007">T007 - PMT absent</option><option value="T008">T008 - PMD absent</option><option value="T009">T009 - AAB absent</option><option value="T010">T010 - ID ligne absent</option><option value="T011">T011 - Quantit√© absente</option><option value="T012">T012 - Prix absent</option><option value="T013">T013 - Cat√©gorie TVA absente</option><option value="T014">T014 - ABZ absent / AKG conserv√©</option><option value="T015">T015 - Qualifiant BT-18 invalide</option><option value="T016">T016 - BT-18 vide</option><option value="T017">T017 - AKG absent / ABZ conserv√©</option><option value="T018">T018 - AKZ au lieu de AKG</option><option value="T019">T019 - Livraison supprim√©e</option></select></div><div><label>&nbsp;</label><button class="primary" id="prefillBtn">Pr√©remplir ce cas</button></div></div><div id="prefillInfo" class="prefill-note"></div><hr><h3>Factures conformes al√©atoires</h3><div class="subgrid"><div><label>Nombre</label><select id="conformCount"><option>1</option><option>3</option><option selected>5</option><option>10</option><option>20</option></select></div><div><label>&nbsp;</label><button class="secondary" id="randomConformBtn">Nouvel exemple conforme</button><button class="primary" id="batchConformBtn">Pr√©parer plusieurs conformes</button></div></div></section>
+<section class="card"><h2>1. En-t√™te</h2><div class="subgrid"><div><label>N¬∞ facture BT-1</label><input id="invoiceId"></div><div><label>Type</label><select id="invoiceType"><option value="380">380 - Facture</option></select></div><div><label>Date √©mission BT-2</label><input id="issueDate" type="date"></div><div><label>√âch√©ance BT-9</label><input id="dueDate" type="date"></div><div><label>Devise BT-5</label><select id="currency"><option>EUR</option><option>USD</option><option>GBP</option></select></div><div><label>BT-23</label><select id="profileId"><option value="B1">B1 - Biens</option><option value="S1">S1 - Services</option><option value="M1">M1 - Mixte</option></select></div><div><label>R√©f. acheteur BT-10</label><input id="buyerReference"></div><div><label>Commande BT-13</label><input id="orderReference"></div><div><label>Contrat BT-12</label><input id="contractReference"></div><div><label>R√©f. paiement</label><input id="paymentReference"></div></div></section>
+<section class="card"><h2>2. Routage / SBDH</h2><div class="subgrid"><div><label class="routing-label">‚òÖ Endpoint vendeur <span class="routing-badge">ROUTAGE</span></label><input id="supplierEndpoint" class="routing-field"></div><div><label class="routing-label">‚òÖ BT-49 acheteur <span class="routing-badge">ROUTAGE</span></label><input id="buyerEndpoint" class="routing-field"></div><div><label>PROCESSID</label><input id="processId" value="urn:peppol:france:billing:regulated"></div><div><label>COUNTRY_C1</label><input id="countryC1" value="FR"></div></div><label>CustomizationID</label><input id="customizationId" value="urn:cen.eu:en16931:2017#conformant#urn:peppol:france:billing:extended:1.0"></section>
+<section class="card"><h2>3. Vendeur</h2><div class="subgrid"><div><label>Raison sociale</label><input id="supplierName" value="VENDEUR AUTOMOBILE EXEMPLE SAS"></div><div><label>‚òÖ SIREN</label><input id="supplierSiren"></div><div><label>TVA</label><input id="supplierVat" value="FR12123456789"></div><div><label>Contact</label><input id="supplierContact" value="Service Facturation"></div><div><label>Email</label><input id="supplierEmail" value="facturation@vendeur-exemple.fr"></div><div><label>T√©l√©phone</label><input id="supplierPhone" value="+33100000000"></div><div><label>Adresse</label><input id="supplierStreet" value="8 avenue des Entreprises"></div><div><label>Compl√©ment</label><input id="supplierStreet2"></div><div><label>CP</label><input id="supplierPostal" value="75000"></div><div><label>Ville</label><input id="supplierCity" value="Paris"></div><div><label>Pays</label><input id="supplierCountry" value="FR"></div></div></section>
+<section class="card"><h2>4. Acheteur</h2><div class="subgrid"><div><label>Raison sociale</label><input id="buyerName" value="CLIENT FLOTTE EXEMPLE SAS"></div><div><label>‚òÖ SIREN BT-47</label><input id="buyerSiren"></div><div><label>TVA</label><input id="buyerVat" value="FR12987654321"></div><div><label>Contact</label><input id="buyerContact" value="Comptabilit√© fournisseurs"></div><div><label>Email</label><input id="buyerEmail" value="compta@client-exemple.fr"></div><div><label>Adresse</label><input id="buyerStreet" value="22 rue des Deux Gares"></div><div><label>Compl√©ment</label><input id="buyerStreet2"></div><div><label>CP</label><input id="buyerPostal" value="92500"></div><div><label>Ville</label><input id="buyerCity" value="Rueil-Malmaison"></div><div><label>Pays</label><input id="buyerCountry" value="FR"></div></div></section>
+<section class="card full"><h2>5. V√©hicule ‚Äî ABZ + AKG simultan√©ment</h2><div class="subgrid"><div><label>BT-18 / ABZ ‚Äî Immatriculation</label><input id="registrationId"></div><div><label>BT-128 / AKG ‚Äî VIN / ch√¢ssis</label><input id="vinId"></div></div></section>
+<section class="card"><h2>6. Livraison optionnelle</h2><label><input id="includeDelivery" type="checkbox" style="width:auto"> Inclure Delivery</label><div class="subgrid"><div><label>Date</label><input id="deliveryDate" type="date"></div><div><label>Destinataire</label><input id="deliveryName" value="CLIENT FLOTTE EXEMPLE SAS"></div><div><label>Adresse</label><input id="deliveryStreet" value="10 avenue du Parc Automobile"></div><div><label>CP</label><input id="deliveryPostal" value="92000"></div><div><label>Ville</label><input id="deliveryCity" value="Nanterre"></div><div><label>Pays</label><input id="deliveryCountry" value="FR"></div></div></section>
+<section class="card"><h2>7. Paiement & notes</h2><div class="subgrid"><div><label>Moyen</label><select id="paymentMeans"><option value="58">58 - SEPA</option><option value="30">30 - Virement</option></select></div><div><label>IBAN</label><input id="iban" value="FR7612345678901234567890123"></div><div><label>BIC</label><input id="bic" value="ABCDEFGHXXX"></div><div><label>Conditions</label><input id="paymentTerms" value="Paiement √† 30 jours date de facture."></div></div><label>PMT</label><input id="notePMT" value="Indemnit√© forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 EUR."><label>PMD</label><input id="notePMD" value="P√©nalit√©s de retard : 12 % par an, exigibles √† compter du lendemain de la date d'√©ch√©ance."><label>AAB</label><input id="noteAAB" value="Escompte pour paiement anticip√© : n√©ant."></section>
+<section class="card full"><div class="line-head"><h2>8. Lignes</h2><button class="primary" id="addLineBtn">+ Ajouter une ligne</button></div><div id="lines"></div><div class="totals"><div class="totalbox"><b>Brut</b><span id="sumGross"></span></div><div class="totalbox"><b>Remises</b><span id="sumAllowances"></span></div><div class="totalbox"><b>HT</b><span id="sumNet"></span></div><div class="totalbox"><b>TVA / TTC</b><span id="sumVat"></span> / <span id="sumTtc"></span></div></div></section>
+<section class="card"><h2>9. G√©n√©ration</h2><input id="scenario" type="hidden" value="T000"><div id="testCard" class="small"></div><button class="primary" id="generateBtn">G√©n√©rer le test</button><button class="secondary" id="allBtn">Pr√©parer tous les tests</button><button class="secondary" id="downloadXmlBtn">T√©l√©charger XML</button><button class="secondary" id="downloadCsvBtn">T√©l√©charger CSV</button></section>
+<section class="card"><h2>10. Contr√¥les</h2><div id="checks" class="small"></div></section>
+<section class="card full"><h2>11. XML</h2><textarea id="xmlPreview" readonly></textarea></section>
+<section class="card full"><h2>12. Cahier de tests</h2><button class="secondary" id="downloadAllCsvBtn">T√©l√©charger cahier CSV</button><table><thead><tr><th>ID</th><th>Sc√©nario</th><th>Fichier</th><th>Attendu</th><th>Champ</th><th>Mutation</th><th>XML</th></tr></thead><tbody id="testsBody"></tbody></table></section>
+</div></div>
+<script src="core-1.js"></script><script src="core-2.js"></script><script src="core-3.js"></script><script src="core-4.js"></script><script src="ui-1.js"></script><script src="ui-2.js"></script>
+</body></html>
